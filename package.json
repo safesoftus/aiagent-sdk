@@ -1,0 +1,38 @@
+{
+  "name": "aiagent-sdk",
+  "private": true,
+  "workspaces": [
+    "packages/ai-agent",
+    "packages/ai-agent-react",
+    "packages/ai-agent-react-native",
+    "packages/ai-agent-widget",
+    "packages/examples/react-vite"
+  ],
+  "scripts": {
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "size": "node packages/scripts/size-budget.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@types/node": "^20.19.43",
+    "esbuild": "0.25.12",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true
+  },
+  "description": "Convoso AI Agent SDKs \u2014 @convoso/ai-agent core, React, React Native and embeddable widget",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/safesoftus/aiagent-sdk"
+  },
+  "license": "MIT"
+}

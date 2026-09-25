@@ -1,0 +1,7 @@
+node_modules/
+packages/*/dist/*
+!packages/ai-agent-widget/dist/widget.js
+packages/examples/*/dist/
+packages/examples/*/node_modules/
+*.log
+.DS_Store

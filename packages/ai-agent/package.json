@@ -1,0 +1,39 @@
+{
+  "name": "@convoso/ai-agent",
+  "version": "0.1.0",
+  "description": "Client SDK for Convoso AI agents: voice and text conversations over WebRTC.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "unpkg": "dist/lib.iife.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "react-native": "./dist/index.react-native.js",
+      "default": "./dist/index.js"
+    },
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "default": "./dist/internal.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/safesoftus/aiagent-sdk",
+    "directory": "packages/ai-agent"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "test": "node build.mjs --tests && node --test dist-test/*.test.mjs"
+  }
+}

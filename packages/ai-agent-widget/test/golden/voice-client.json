@@ -1,0 +1,278 @@
+[
+  {
+    "kind": "scenario",
+    "name": "agent-ended"
+  },
+  {
+    "kind": "state",
+    "state": "connecting"
+  },
+  {
+    "kind": "pc",
+    "config": {
+      "iceServers": [
+        {
+          "urls": "stun:stun.l.google.com:19302"
+        }
+      ]
+    }
+  },
+  {
+    "kind": "dc",
+    "label": "pipecat"
+  },
+  {
+    "kind": "gum",
+    "constraints": {
+      "audio": {
+        "echoCancellation": true,
+        "noiseSuppression": false,
+        "autoGainControl": false
+      },
+      "video": false
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "createOffer",
+    "options": {
+      "voiceActivityDetection": false
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "setLocalDescription",
+    "type": "offer",
+    "sdp": "v=0\r\no=- 1 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 usedtx=0;useinbandfec=1\r\na=sendrecv\r\n"
+  },
+  {
+    "kind": "timer",
+    "delay": 250
+  },
+  {
+    "kind": "fetch",
+    "url": "https://preview.test/api/offer",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "traceparent": "00-aaaa-bbbb-01",
+      "tracestate": "voso=1"
+    },
+    "body": {
+      "sdp": "v=0\r\no=- 1 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 usedtx=0;useinbandfec=1\r\na=sendrecv\r\n",
+      "type": "offer",
+      "session_id": "sess_golden",
+      "request_data": {
+        "session_id": "sess_golden"
+      }
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "setRemoteDescription",
+    "type": "answer",
+    "sdp": "v=0\r\na=answer\r\n"
+  },
+  {
+    "kind": "state",
+    "state": "connected"
+  },
+  {
+    "kind": "send",
+    "frame": {
+      "label": "rtvi-ai",
+      "type": "client-ready",
+      "id": "client-ready-ID"
+    }
+  },
+  {
+    "kind": "send",
+    "frame": {
+      "label": "rtvi-ai",
+      "type": "send-text",
+      "id": "send-text-ID",
+      "data": {
+        "content": "hi",
+        "options": {
+          "run_immediately": true,
+          "audio_response": true
+        }
+      }
+    }
+  },
+  {
+    "kind": "send",
+    "frame": {
+      "label": "rtvi-ai",
+      "type": "llm-function-call-result",
+      "id": "tool-result-ID",
+      "data": {
+        "tool_call_id": "t1",
+        "result": "ok",
+        "is_error": false
+      }
+    }
+  },
+  {
+    "kind": "send",
+    "frame": {
+      "label": "rtvi-ai",
+      "type": "mcp-tool-approval-result",
+      "id": "mcp-approval-ID",
+      "data": {
+        "tool_call_id": "m1",
+        "is_approved": true
+      }
+    }
+  },
+  {
+    "kind": "send",
+    "frame": {
+      "label": "rtvi-ai",
+      "type": "append-to-context",
+      "id": "context-ID",
+      "data": {
+        "text": "ctx",
+        "context_id": "c1"
+      }
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "createOffer",
+    "options": {
+      "voiceActivityDetection": false
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "setLocalDescription",
+    "type": "offer",
+    "sdp": "v=0\r\no=- 1 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 usedtx=0;useinbandfec=1\r\na=sendrecv\r\n"
+  },
+  {
+    "kind": "timer",
+    "delay": 250
+  },
+  {
+    "kind": "fetch",
+    "url": "https://preview.test/api/offer",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "traceparent": "00-aaaa-bbbb-01",
+      "tracestate": "voso=1"
+    },
+    "body": {
+      "sdp": "v=0\r\no=- 1 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 usedtx=0;useinbandfec=1\r\na=sendrecv\r\n",
+      "type": "offer",
+      "session_id": "sess_golden",
+      "request_data": {
+        "session_id": "sess_golden"
+      },
+      "pc_id": "pc-1",
+      "restart_pc": false
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "setRemoteDescription",
+    "type": "answer",
+    "sdp": "v=0\r\na=answer\r\n"
+  },
+  {
+    "kind": "state",
+    "state": "disconnected"
+  },
+  {
+    "kind": "scenario",
+    "name": "user-ended"
+  },
+  {
+    "kind": "state",
+    "state": "connecting"
+  },
+  {
+    "kind": "pc",
+    "config": {
+      "iceServers": [
+        {
+          "urls": "stun:stun.l.google.com:19302"
+        }
+      ]
+    }
+  },
+  {
+    "kind": "dc",
+    "label": "pipecat"
+  },
+  {
+    "kind": "gum",
+    "constraints": {
+      "audio": {
+        "echoCancellation": true,
+        "noiseSuppression": false,
+        "autoGainControl": false
+      },
+      "video": false
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "createOffer",
+    "options": {
+      "voiceActivityDetection": false
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "setLocalDescription",
+    "type": "offer",
+    "sdp": "v=0\r\no=- 1 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 usedtx=0;useinbandfec=1\r\na=sendrecv\r\n"
+  },
+  {
+    "kind": "timer",
+    "delay": 250
+  },
+  {
+    "kind": "fetch",
+    "url": "https://preview.test/api/offer",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "traceparent": "00-aaaa-bbbb-01",
+      "tracestate": "voso=1"
+    },
+    "body": {
+      "sdp": "v=0\r\no=- 1 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 usedtx=0;useinbandfec=1\r\na=sendrecv\r\n",
+      "type": "offer",
+      "session_id": "sess_golden",
+      "request_data": {
+        "session_id": "sess_golden"
+      }
+    }
+  },
+  {
+    "kind": "sdp",
+    "op": "setRemoteDescription",
+    "type": "answer",
+    "sdp": "v=0\r\na=answer\r\n"
+  },
+  {
+    "kind": "fetch",
+    "url": "https://preview.test/api/disconnect",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "session_id": "sess_golden",
+      "session_token": "st_golden"
+    },
+    "keepalive": true
+  },
+  {
+    "kind": "state",
+    "state": "disconnected"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Convoso AI agent sample",
+    "slug": "convoso-ai-agent-sample",
+    "version": "0.0.0",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "bundleIdentifier": "com.convoso.aiagent.sample",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "The sample talks to an AI agent over your microphone."
+      }
+    },
+    "android": {
+      "package": "com.convoso.aiagent.sample",
+      "permissions": ["android.permission.RECORD_AUDIO", "android.permission.MODIFY_AUDIO_SETTINGS"]
+    },
+    "plugins": [
+      "expo-dev-client",
+      [
+        "@config-plugins/react-native-webrtc",
+        { "microphonePermission": "The sample talks to an AI agent over your microphone." }
+      ]
+    ],
+    "extra": {
+      "agentId": "00000000-0000-0000-0000-000000000000",
+      "apiOrigin": "https://aiagent-api-stage.convoso.com"
+    }
+  }
+}

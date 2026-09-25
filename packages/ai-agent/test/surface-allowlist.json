@@ -1,0 +1,106 @@
+{
+  "_comment": "E4 Q12 hard condition. The published @convoso/ai-agent may expose ONLY what the widget's WebRTC client (voice.ts + api.ts) had on 2026-09-23, plus the vendor-parity Conversation façade. Staff-only capabilities live in the private @convoso/ai-agent-internal. Extend a list only with an owner-ruled reason in the same commit.",
+  "public": [
+    "Conversation",
+    "NO_VOLUME",
+    "SessionConnectionError",
+    "TextConversation",
+    "VoiceConversation",
+    "postOverallFeedback",
+    "setSourceInfo"
+  ],
+  "internal": [
+    "MIC_CONSTRAINTS",
+    "QUEUE_STATUS_MESSAGE_TYPE",
+    "QUEUE_TIMEOUT_REASON",
+    "SESSION_ENDED_MESSAGE_TYPE",
+    "VoiceClient",
+    "WidgetApi",
+    "WidgetApiError",
+    "buildAppendToContextEnvelope",
+    "buildFunctionCallResultEnvelope",
+    "buildMcpToolApprovalEnvelope",
+    "buildSendTextEnvelope",
+    "clientToolCallFromRtvi",
+    "isRenderableTranscript",
+    "isSessionEndedMessage",
+    "mcpToolCallDataFromRtvi",
+    "peerFailureState",
+    "platform",
+    "queueTransition",
+    "sessionStartBody",
+    "setPlatform",
+    "transcriptRole",
+    "tuneOpusFmtp"
+  ],
+  "outboundRtviTypes": [
+    "append-to-context",
+    "client-ready",
+    "feedback",
+    "llm-function-call-result",
+    "mcp-tool-approval-result",
+    "send-text",
+    "user-activity"
+  ],
+  "forbiddenTokens": [
+    "X-Voso-Tenant",
+    "Authorization",
+    "voso_active_tenant",
+    "voso-supervisor",
+    "supervisor-command",
+    "takeover",
+    "whisper",
+    "live-monitor",
+    "ai-agent-internal",
+    "session_token=",
+    "recvonly",
+    "session_token"
+  ],
+  "allowedLines": {
+    "Authorization": [
+      {
+        "file": "internal/widget-api.ts",
+        "pattern": "Base headers for every call — the preview's Authorization only|headers\\.Authorization = `Bearer \\$\\{this\\.authToken\\}`",
+        "why": "today's widget: the element's auth-token attribute (settings live preview of a disabled widget)"
+      },
+      {
+        "file": "internal/session-resolver.ts",
+        "pattern": "headers\\[\"Authorization\"\\] = `Bearer \\$\\{config\\.authorization\\}`",
+        "why": "the vendor's `authorization` option: the customer's own bearer on the token request for a private agent"
+      },
+      {
+        "file": "feedback.ts",
+        "pattern": "headers\\[\"Authorization\"\\] = `Bearer \\$\\{authorization\\}`",
+        "why": "owner ruling Q16 (P2): postOverallFeedback's optional bearer — the vendor-path feedback route authenticates with the customer's own API key"
+      }
+    ],
+    "session_token": [
+      {
+        "file": "internal/widget-api.ts",
+        "pattern": "^\\s*session_token\\?: string;$",
+        "why": "the mint descriptor type"
+      },
+      {
+        "file": "internal/voice-client.ts",
+        "pattern": "disconnectBody\\(\\)|session_token: this\\.session\\.session_token|no session_token\"|proof\\.session_token",
+        "why": "the widget's ownership-proof disconnect (VOSO-191)"
+      },
+      {
+        "file": "internal/voice-client.ts",
+        "pattern": "const \\{ session_id, session_token, conversation_id \\} = answer;|return \\{ session_id, session_token, conversation_id: conversation_id \\?\\? \"\" \\};",
+        "why": "a token offer's answer carries the disconnect proof (E4 P1, commit 1.4)"
+      }
+    ],
+    "recvonly": [
+      {
+        "file": "conversation/client.ts",
+        "pattern": "pc\\.addTransceiver\\(\"audio\", \\{ direction: \"recvonly\" \\}\\); // text-only: no mic \\(Q19\\)",
+        "why": "Q19 text-only session: no microphone, the answer still negotiates audio"
+      }
+    ]
+  },
+  "_extensions": [
+    "P2 (2026-09-23): outboundRtviTypes += feedback — owner ruling Q16, per-response feedback over the data channel into the E2 D-10 store",
+    "P2 (2026-09-23): allowedLines.Authorization += feedback.ts — owner ruling Q16, the customer's own key on the overall-feedback request"
+  ]
+}

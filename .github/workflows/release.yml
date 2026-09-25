@@ -1,0 +1,30 @@
+# npm release for the @convoso/ai-agent* packages.
+# Cadence: changesets opens a "Version Packages" PR, a human merges it, then this
+# workflow is dispatched by hand. It builds, dry-runs the publish, and publishes
+# only when the repository variable NPM_PUBLISH_READY is 'true' and the
+# NPM_TOKEN secret is set (a granular token scoped to the @convoso org).
+name: release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - name: npm publish (dry-run)
+        run: npm publish --dry-run --workspace packages/ai-agent --workspace packages/ai-agent-react --workspace packages/ai-agent-react-native --workspace packages/ai-agent-widget
+      - name: changeset publish
+        if: vars.NPM_PUBLISH_READY == 'true'
+        run: npx changeset publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,61 @@
+<!doctype html>
+<!--
+  Client tools + contextual updates with <voso-widget> (E3, VOSO-756).
+
+  1. Replace HOST with your vosopulse-api origin and AGENT_PUBLIC_ID with the
+     widget's public id (Deploy → Channels → Widget).
+  2. Attach a client tool named `lookup_policy` (one parameter,
+     `policy_number`) to the agent.
+  3. Open this page, start a voice or chat session and ask: "Can you look up
+     policy POL-88213?" — the console logs the call and the answer; the agent
+     then speaks/writes the plan name.
+  4. Press "Send CRM note" and ask "Which tier am I on now?" — the agent
+     answers Gold without having spoken when the note arrived.
+-->
+<meta charset="utf-8" />
+<title>voso-widget client tools example</title>
+<voso-widget id="voso" agent-id="AGENT_PUBLIC_ID" server-url="https://HOST"></voso-widget>
+<script src="https://HOST/widget.js" async type="text/javascript"></script>
+<p>
+  <button id="note">Send CRM note</button>
+  <button id="cart">Update cart (contextId "cart")</button>
+</p>
+<script>
+  const widget = document.getElementById("voso");
+
+  // The page's implementations of the agent's client tools. A handler may
+  // return a string, an object (JSON-stringified) or a Promise of either;
+  // `undefined` sends "Client tool execution successful."; a thrown error
+  // is reported to the agent as an error.
+  widget.clientTools = {
+    lookup_policy: async ({ policy_number }) => {
+      console.log("client_tool_call lookup_policy", policy_number);
+      if (policy_number === "POL-00001") throw new Error("not found");
+      return { status: "active", plan: "Silver PPO", monthly_premium_usd: 412.5 };
+    },
+  };
+
+  // Optional: take over tools the page did not register (nothing is sent;
+  // the agent's Response timeout applies).
+  // widget.onUnhandledClientToolCall = (call) => console.warn("unhandled", call);
+
+  // MCP approval (an "Ask" MCP server or tool on the agent): the agent
+  // pauses up to 30 s for the page's answer. Without this handler the
+  // widget denies every ask at once.
+  widget.onMcpToolCall = (call) => {
+    if (call.state !== "awaiting_approval") return; // loading / success / failure
+    const ok = window.confirm(`Allow the agent to run ${call.toolName}?`);
+    widget.approveMcpTool(call.toolCallId, ok);
+  };
+
+  document.getElementById("note").onclick = () =>
+    widget.sendContextualUpdate(
+      "System note: the customer has just upgraded to the Gold tier plan, effective today.",
+    );
+  let cartVersion = 0;
+  document.getElementById("cart").onclick = () =>
+    widget.sendContextualUpdate(
+      `Cart: ${++cartVersion === 1 ? "one cleaning" : "one whitening kit, the cleaning was removed"}`,
+      { contextId: "cart" },
+    );
+</script>

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@convoso/ai-agent": ["../ai-agent/src/index.ts"],
+      "@convoso/ai-agent/internal": ["../ai-agent/src/internal.ts"],
+      "@convoso/ai-agent-react": ["../ai-agent-react/src/index.tsx"]
+    }
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}

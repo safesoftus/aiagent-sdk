@@ -1,0 +1,52 @@
+{
+  "name": "@convoso/ai-agent-react-native",
+  "version": "0.1.0",
+  "description": "React Native provider and hooks for Convoso AI agent conversations over WebRTC (react-native-webrtc; Expo development builds).",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "react-native": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "react-native": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/safesoftus/aiagent-sdk",
+    "directory": "packages/ai-agent-react-native"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "test": "node build.mjs --tests && node --test dist-test/*.test.mjs"
+  },
+  "dependencies": {
+    "@convoso/ai-agent": "^0.1.0",
+    "@convoso/ai-agent-react": "^0.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.79",
+    "react-native-webrtc": "^124.0.0",
+    "react-native-incall-manager": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "react-native-incall-manager": {
+      "optional": true
+    }
+  }
+}

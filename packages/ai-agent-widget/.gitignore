@@ -1,0 +1,3 @@
+node_modules/
+# The npm / CDN bundle (E4 Q8) is built at publish; dist/widget.js stays committed (E1 D2).
+dist/index.js

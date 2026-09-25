@@ -1,0 +1,27 @@
+{
+  "name": "@convoso/example-expo",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "description": "Expo development-build sample for @convoso/ai-agent-react-native (E4 QA rows). Not a root workspace: it installs React Native on its own.",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
+    "build:dev:ios": "eas build --profile development --platform ios",
+    "build:dev:android": "eas build --profile development --platform android"
+  },
+  "dependencies": {
+    "@config-plugins/react-native-webrtc": "^12.0.0",
+    "@convoso/ai-agent": "file:../../ai-agent",
+    "@convoso/ai-agent-react": "file:../../ai-agent-react",
+    "@convoso/ai-agent-react-native": "file:../../ai-agent-react-native",
+    "expo": "~53.0.0",
+    "expo-constants": "~17.1.0",
+    "expo-dev-client": "~5.1.0",
+    "react": "19.0.0",
+    "react-native": "0.79.2",
+    "react-native-incall-manager": "^4.2.0",
+    "react-native-webrtc": "^124.0.0"
+  }
+}

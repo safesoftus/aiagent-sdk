@@ -1,0 +1,183 @@
+<!doctype html>
+<!--
+  E3 QA page — the tester's harness for docs/qa/agent-integration-e3-qa.md
+  (VOSO-756). NOT a customer example (see client-tools.html for that): the
+  buttons below reach into the widget's internals (voice data channel) so a
+  QA person can send the odd-shaped answers the plan asks for without the
+  browser console.
+
+  Engineer setup: replace HOST with the vosopulse-api origin and
+  AGENT_PUBLIC_ID with the agent's widget public id (Deploy → Channels →
+  Widget), open the file in a browser. Every message the widget receives on a
+  voice session is printed in the log panel (newest at the bottom).
+-->
+<meta charset="utf-8" />
+<title>E3 QA page — voso-widget</title>
+<style>
+  body { font: 14px system-ui, sans-serif; margin: 16px; max-width: 980px; }
+  fieldset { margin: 0 0 12px; }
+  button, select { margin: 2px 4px 2px 0; }
+  #log { height: 320px; overflow: auto; background: #111; color: #ddd; padding: 8px; font: 12px ui-monospace, monospace; white-space: pre-wrap; }
+  #log b { color: #ffd166; }
+  #log .err { color: #ff6b6b; }
+</style>
+<voso-widget id="voso" agent-id="AGENT_PUBLIC_ID" server-url="https://HOST"></voso-widget>
+<script src="https://HOST/widget.js" async type="text/javascript"></script>
+
+<h1>E3 QA page</h1>
+
+<fieldset>
+  <legend>lookup_policy — how this page answers the agent's client tool call</legend>
+  <label>Mode
+    <select id="mode">
+      <option value="normal">Normal — answer with the plan (object)</option>
+      <option value="string">Normal — answer as plain text</option>
+      <option value="error">Answer with error ("not found")</option>
+      <option value="none">Do not answer (let it time out)</option>
+      <option value="late">Answer late (after 25 s)</option>
+    </select>
+  </label>
+  <p>Raw answers (voice only — they go straight to the call's data channel):</p>
+  <button id="again">Answer the last call again</button>
+  <button id="madeup">Answer with a made-up id</button>
+  <button id="noresult">Answer without a result field</button>
+  <button id="badtype">Answer with a made-up error type</button>
+  <button id="notanerror">Answer "not an error" but with an error type</button>
+</fieldset>
+
+<fieldset>
+  <legend>Dynamic variables — set BEFORE starting a session (voice or chat)</legend>
+  <label>Preset
+    <select id="vars">
+      <option value="unset">None (the page sends no variables)</option>
+      <option value="dana">Dana / Acme</option>
+      <option value="empty">Empty set {}</option>
+      <option value="sys_dot">Reserved: system.caller_id</option>
+      <option value="sys_caps">Reserved: System__caller_id</option>
+      <option value="secret">Reserved: secret__token</option>
+      <option value="sip">Reserved: sip_account</option>
+      <option value="convoso">Reserved: convoso.first_name</option>
+      <option value="null">Null value</option>
+      <option value="list">List value</option>
+      <option value="object">Object value</option>
+      <option value="longname">65-letter name</option>
+      <option value="many">201 variables</option>
+      <option value="longvalue">17,000-character value</option>
+    </select>
+  </label>
+  <span id="varsnow"></span>
+</fieldset>
+
+<fieldset>
+  <legend>Contextual updates (CRM notes)</legend>
+  <button id="note">Send CRM note</button>
+  <button id="cart">Update cart (1st: cleaning, 2nd: whitening kit)</button>
+  <button id="twenty">Send 20 CRM notes</button>
+  <button id="numid">Send a note with a numeric id</button>
+</fieldset>
+
+<fieldset>
+  <legend>Log — every message the widget receives on a voice session</legend>
+  <button id="clear">Clear log</button>
+  <pre id="log"></pre>
+</fieldset>
+
+<script>
+  const widget = document.getElementById("voso");
+  const logEl = document.getElementById("log");
+  const modeEl = document.getElementById("mode");
+  let lastToolCallId = null;
+
+  function line(kind, body, cls) {
+    const el = document.createElement("div");
+    if (cls) el.className = cls;
+    el.innerHTML = `<b>${kind}</b> ${body ?? ""}`;
+    logEl.appendChild(el);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+  document.getElementById("clear").onclick = () => (logEl.textContent = "");
+
+  // --- the page's client tool (what the agent calls)
+  widget.clientTools = {
+    lookup_policy: async ({ policy_number }) => {
+      line("client_tool_call", `lookup_policy policy_number=${JSON.stringify(policy_number)} (mode: ${modeEl.value})`);
+      switch (modeEl.value) {
+        case "error": throw new Error("not found");
+        case "none": return new Promise(() => {}); // never answers
+        case "late": await new Promise((r) => setTimeout(r, 25000)); break;
+        case "string": return "Policy active, plan Silver PPO, monthly premium 412.50 USD";
+      }
+      return { status: "active", plan: "Silver PPO", monthly_premium_usd: 412.5 };
+    },
+  };
+
+  // --- MCP approval: a browser dialog; OK = approve, Cancel = deny.
+  widget.onMcpToolCall = (call) => {
+    line("mcp-tool-call", `${call.toolName} state=${call.state}` + (call.errorMessage ? ` error=${call.errorMessage}` : ""));
+    if (call.state !== "awaiting_approval") return;
+    const ok = window.confirm(`Allow the agent to run ${call.toolName}?`);
+    widget.approveMcpTool(call.toolCallId, ok);
+  };
+
+  // --- log every message on the voice data channel (wraps the widget's
+  // internal handler; QA harness only).
+  customElements.whenDefined("voso-widget").then(() => {
+    const proto = Object.getPrototypeOf(widget);
+    const orig = proto.onRtviMessage;
+    if (typeof orig !== "function") { line("page", "cannot hook messages — widget build changed", "err"); return; }
+    widget.onRtviMessage = function (msg) {
+      const data = msg && msg.data !== undefined ? JSON.stringify(msg.data) : "";
+      const type = msg?.type ?? "?";
+      if (type === "llm-function-call" && msg.data?.tool_call_id) lastToolCallId = msg.data.tool_call_id;
+      line(type, data.length > 600 ? data.slice(0, 600) + "…" : data, type === "error-response" || type === "error" ? "err" : "");
+      return orig.call(this, msg);
+    };
+  });
+
+  // --- raw answers on the data channel (voice only)
+  function rawSend(data) {
+    const dc = widget.voice && widget.voice.dc;
+    if (!dc || dc.readyState !== "open") { line("page", "no open voice session — start a voice call first", "err"); return; }
+    dc.send(JSON.stringify({ label: "rtvi-ai", type: "llm-function-call-result", id: `qa-${Date.now().toString(36)}`, data }));
+    line("page → sent", JSON.stringify(data));
+  }
+  const okResult = JSON.stringify({ status: "active", plan: "Silver PPO", monthly_premium_usd: 412.5 });
+  document.getElementById("again").onclick = () => lastToolCallId ? rawSend({ tool_call_id: lastToolCallId, result: okResult, is_error: false }) : line("page", "no tool call seen yet", "err");
+  document.getElementById("madeup").onclick = () => rawSend({ tool_call_id: "made-up-id-000", result: okResult, is_error: false });
+  document.getElementById("noresult").onclick = () => rawSend({ tool_call_id: lastToolCallId || "made-up-id-000", is_error: false });
+  document.getElementById("badtype").onclick = () => rawSend({ tool_call_id: lastToolCallId || "made-up-id-000", result: "x", is_error: true, error_type: "made_up" });
+  document.getElementById("notanerror").onclick = () => rawSend({ tool_call_id: lastToolCallId || "made-up-id-000", result: "upstream failed", is_error: false, error_type: "external_server" });
+
+  // --- dynamic variables presets
+  const presets = {
+    unset: null,
+    dana: { customer_name: "Dana", company: "Acme" },
+    empty: {},
+    sys_dot: { "system.caller_id": "x" },
+    sys_caps: { "System__caller_id": "x" },
+    secret: { "secret__token": "x" },
+    sip: { "sip_account": "x" },
+    convoso: { "convoso.first_name": "x" },
+    null: { customer_name: null },
+    list: { customer_name: ["a", "b"] },
+    object: { first: { name: "Dana" } },
+    longname: { ["a".repeat(65)]: "x" },
+    many: Object.fromEntries(Array.from({ length: 201 }, (_, i) => [`var_${i}`, "x"])),
+    longvalue: { customer_name: "d".repeat(17000) },
+  };
+  const varsEl = document.getElementById("vars");
+  varsEl.onchange = () => {
+    widget.dynamicVariables = presets[varsEl.value];
+    const v = widget.dynamicVariables;
+    document.getElementById("varsnow").textContent = v === null ? "→ no variables will be sent" : `→ ${Object.keys(v).length} variable(s) set`;
+    line("page", `dynamicVariables = ${varsEl.options[varsEl.selectedIndex].text}`);
+  };
+
+  // --- contextual updates
+  const send = (text, opts) => widget.sendContextualUpdate(text, opts).then((ok) => line("page → contextual_update", `${ok ? "sent" : "NOT sent (no session?)"}: ${text.slice(0, 80)}`));
+  document.getElementById("note").onclick = () => send("System note: the customer has just upgraded to the Gold tier plan, effective today.");
+  let cartVersion = 0;
+  document.getElementById("cart").onclick = () => send(`Cart: ${++cartVersion === 1 ? "one cleaning" : "one whitening kit, the cleaning was removed"}`, { contextId: "cart" });
+  document.getElementById("twenty").onclick = async () => { for (let i = 1; i <= 20; i++) { await send(`CRM note ${i}: ticket #100${i} updated`); await new Promise((r) => setTimeout(r, 90)); } };
+  document.getElementById("numid").onclick = () => send("note with a numeric id", { contextId: 123 });
+</script>
