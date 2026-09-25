@@ -3,15 +3,16 @@
 The embeddable Convoso AI agent widget: a voice + chat button for any website, one custom element and
 one script tag. No framework, shadow-DOM isolated, zero runtime dependencies. MIT licensed.
 
-> Not published yet: publishing waits for the `@convoso` npm org (E4 publish gate). Today the same
-> bundle is served by the api at `/widget.js` — copy the snippet from the dashboard's Widget tab.
+> Published on npm. Source, issues and releases live in the public repo
+> [safesoftus/aiagent-sdk](https://github.com/safesoftus/aiagent-sdk). The api also
+> serves the same bundle at `/widget.js` — copy the snippet from the dashboard's Widget tab.
 
 ```html
 <voso-widget agent-id="wgt_<32 hex>"></voso-widget>
 <script src="https://aiagent-api.convoso.com/widget.js" async type="text/javascript"></script>
 ```
 
-After the first publish, from the CDN (the api origin is named because a CDN copy cannot derive it):
+From the CDN (the api origin is named because a CDN copy cannot derive it):
 
 ```html
 <voso-widget agent-id="wgt_<32 hex>" server-url="https://aiagent-api.convoso.com"></voso-widget>
@@ -30,4 +31,4 @@ After the first publish, from the CDN (the api origin is named because a CDN cop
   interim mobile guide with a `wgt_…` id switch to the agent uuid when they move to the SDK.
 
 Full guide (attributes, events, client tools):
-[`docs/guides/sdk-widget.md`](https://github.com/safesoftus/aiagent-sdk/blob/main/docs/sdk-widget.md).
+[`docs/sdk-widget.md`](https://github.com/safesoftus/aiagent-sdk/blob/main/docs/sdk-widget.md).

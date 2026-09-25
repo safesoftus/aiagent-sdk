@@ -3,7 +3,8 @@
 React provider and hooks for Convoso AI agents, with the vendor's React names — swap the import
 and the agent id. Re-exports everything from `@convoso/ai-agent`.
 
-> Not published yet: publishing waits for the `@convoso` npm org (E4 publish gate).
+> Published on npm. Source, issues and releases live in the public repo
+> [safesoftus/aiagent-sdk](https://github.com/safesoftus/aiagent-sdk).
 
 ```tsx
 import { ConversationProvider, useConversation } from "@convoso/ai-agent-react";

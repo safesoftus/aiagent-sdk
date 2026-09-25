@@ -2,9 +2,10 @@
 
 Talk to a Convoso AI agent from a React Native app: the `@convoso/ai-agent-react` provider and hooks
 over native WebRTC (`react-native-webrtc`). Replaces the interim hand-copied client of
-`docs/guides/agent-mobile-integration.md`.
+`docs/agent-mobile-integration.md`.
 
-> Not published yet: publishing waits for the `@convoso` npm org (E4 publish gate).
+> Published on npm. Source, issues and releases live in the public repo
+> [safesoftus/aiagent-sdk](https://github.com/safesoftus/aiagent-sdk).
 
 ## Requirements (Q5)
 

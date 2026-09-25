@@ -29,7 +29,6 @@
   "allowScripts": {
     "esbuild@0.25.12": true
   },
-  "description": "Convoso AI Agent SDKs \u2014 @convoso/ai-agent core, React, React Native and embeddable widget",
   "repository": {
     "type": "git",
     "url": "https://github.com/safesoftus/aiagent-sdk"

@@ -3,7 +3,8 @@
 Client SDK for Convoso AI agents — start a voice or text conversation with an agent from a browser
 (React Native through `@convoso/ai-agent-react-native`). Zero runtime dependencies; WebRTC transport.
 
-> Not published yet: publishing waits for the `@convoso` npm org (E4 publish gate).
+> Published on npm. Source, issues and releases live in the public repo
+> [safesoftus/aiagent-sdk](https://github.com/safesoftus/aiagent-sdk).
 
 ```ts
 import { Conversation } from "@convoso/ai-agent";
@@ -44,6 +45,6 @@ await conversation.endSession();
   API key (`history: write`) — call it from your server:
   `postOverallFeedback(id, { rating: 5 }, "https://aiagent-api.convoso.com", process.env.CONVOSO_API_KEY)`.
 
-Full guide: [`docs/guides/sdk-javascript.md`](https://github.com/safesoftus/aiagent-sdk/blob/main/docs/sdk-javascript.md).
+Full guide: [`docs/sdk-javascript.md`](https://github.com/safesoftus/aiagent-sdk/blob/main/docs/sdk-javascript.md).
 React: `@convoso/ai-agent-react`; React Native: `@convoso/ai-agent-react-native`; embed widget:
 `@convoso/ai-agent-widget`. License: MIT.

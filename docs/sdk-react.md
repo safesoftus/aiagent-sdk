@@ -3,8 +3,8 @@
 React provider and hooks over [`@convoso/ai-agent`](sdk-javascript.md). Same session options, callbacks
 and client tools; this page covers only what the React layer adds.
 
-> **Not published yet.** Publishes with the first SDK release (E4 publish gate, VOSO-757). Until then
-> build from this repo and depend on it with `"@convoso/ai-agent-react": "file:<path>/packages/ai-agent-react"`.
+> **Published on npm.** Source, issues and releases live in the public repo
+> [safesoftus/aiagent-sdk](https://github.com/safesoftus/aiagent-sdk).
 > The sample app `packages/examples/react-vite` shows the full wiring.
 
 ## 1. Install

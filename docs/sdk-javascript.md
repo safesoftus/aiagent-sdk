@@ -3,10 +3,8 @@
 Start a voice or text conversation with a Convoso AI agent from a browser app. The package is the
 client half of the same WebRTC path the dashboard's **Test your agent** and the embedded widget use.
 
-> **Not published yet.** The package publishes with the first SDK release, once the `@convoso` npm
-> organisation is ours (E4 publish gate, VOSO-757). Until then build it from this repo
-> (`npm ci && npm run build` at the repo root) and depend on it with
-> `"@convoso/ai-agent": "file:<path>/packages/ai-agent"`.
+> **Published on npm.** Source, issues and releases live in the public repo
+> [safesoftus/aiagent-sdk](https://github.com/safesoftus/aiagent-sdk).
 
 Plan and owner rulings: `docs/plans/agent-integration/E4-sdks.plan.md` §8a. React: [`sdk-react.md`](sdk-react.md).
 React Native: [`sdk-react-native.md`](sdk-react-native.md). Embed widget: [`sdk-widget.md`](sdk-widget.md).

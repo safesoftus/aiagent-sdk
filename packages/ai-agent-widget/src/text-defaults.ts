@@ -9,7 +9,7 @@
 //      count. Changing keys here requires changing the Rust list in the same
 //      change-set.
 //
-// Keys and defaults mirror the the vendor convai widget's text_contents map.
+// Keys and defaults mirror the vendor convai widget's text_contents map.
 
 export const WIDGET_TEXT_DEFAULTS = {
   main_label: "Need help?",

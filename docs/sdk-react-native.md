@@ -4,9 +4,8 @@ Voice and text conversations with a Convoso AI agent from an iOS / Android app. 
 [React SDK](sdk-react.md) (same provider and hooks) running on `react-native-webrtc`. It replaces the
 interim hand-written mobile guide (`agent-mobile-integration.md`, owner ruling Q23).
 
-> **Not published yet.** Publishes with the first SDK release (E4 publish gate, VOSO-757). Until then
-> build from this repo and depend on it with
-> `"@convoso/ai-agent-react-native": "file:<path>/packages/ai-agent-react-native"`. The sample app
+> **Published on npm.** Source, issues and releases live in the public repo
+> [safesoftus/aiagent-sdk](https://github.com/safesoftus/aiagent-sdk). The sample app
 > `packages/examples/expo` is a working Expo development build.
 
 ## 1. Install
