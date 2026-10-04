@@ -143,6 +143,11 @@ export class VoiceClient {
   private disposed = false;
   private audioRendering = false;
   private clientReadySent = false;
+  /** Closing / navigating the tab ends the call like End Call (VOSO-991):
+   *  without it the server sees a vanished peer only at the ICE timeout. */
+  private readonly onPageHide = () => {
+    if (!this.disposed) void this.disconnect();
+  };
 
   constructor(
     protected readonly session: VoiceSessionDescriptor,
@@ -281,6 +286,12 @@ export class VoiceClient {
             : [{ urls: "stun:stun.l.google.com:19302" }],
       });
       this.pc = pc;
+      // `pagehide` (not `beforeunload`/`unload`) is the one end-of-page event
+      // that fires on mobile and with the back/forward cache. The disconnect
+      // POST already rides `keepalive: true`, so it outlives the page; a
+      // beacon cannot carry the JSON content type the endpoint requires.
+      // React Native has no page: no listener (n/a).
+      globalThis.addEventListener?.("pagehide", this.onPageHide);
 
       pc.addEventListener("connectionstatechange", () => {
         if (this.disposed) return;
@@ -511,6 +522,8 @@ export class VoiceClient {
   }
 
   async disconnect(): Promise<void> {
+    // A second disconnect (End Call after the page-close one) posts nothing.
+    const alreadyReleased = this.disposed;
     this.disposed = true;
     // Ownership proof (VOSO-191): the worker rejects teardown without the
     // token minted alongside this session. A token-less descriptor (older
@@ -518,7 +531,7 @@ export class VoiceClient {
     // and let the server side fall back to ICE-timeout teardown. After the
     // worker's own end announcement there is nothing left to tear down.
     const proof = this.disconnectBody();
-    if (this.serverEnded) {
+    if (this.serverEnded || alreadyReleased) {
       // The worker announced the end and tore the session down itself:
       // nothing to request, nothing to warn about.
     } else if (!proof.session_token) {
@@ -544,6 +557,7 @@ export class VoiceClient {
   }
 
   private async cleanup(): Promise<void> {
+    globalThis.removeEventListener?.("pagehide", this.onPageHide);
     try {
       this.dc?.close();
     } catch {
