@@ -1,6 +1,6 @@
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
-import { peer, recorder, server, tick } from "./harness";
+import { FakeTarget, peer, recorder, server, tick } from "./harness";
 import { Conversation, SessionConnectionError } from "../src/index";
 
 beforeEach(() => server.reset());
@@ -100,4 +100,51 @@ test("endSession while connecting rejects startSession and nothing stays live (C
   const again = await Conversation.startSession({ agentId: "0191f3c4-5b6a-7c8d-9e0f-a1b2c3d4e5f6", origin: "https://api.test" });
   assert.equal(again.isOpen(), true);
   await again.endSession();
+});
+
+/** Install a fake page (`globalThis` event target) for one test. */
+function withPage(): { page: FakeTarget; restore: () => void } {
+  const page = new FakeTarget();
+  const g = globalThis as unknown as Record<string, unknown>;
+  const saved = { add: g.addEventListener, remove: g.removeEventListener };
+  g.addEventListener = page.addEventListener.bind(page);
+  g.removeEventListener = page.removeEventListener.bind(page);
+  return {
+    page,
+    restore: () => {
+      g.addEventListener = saved.add;
+      g.removeEventListener = saved.remove;
+    },
+  };
+}
+
+test("VOSO-991: closing the tab (pagehide) sends the ownership-proof disconnect once", async () => {
+  const { page, restore } = withPage();
+  try {
+    const { conversation } = await connected();
+    page.emit("pagehide", { persisted: false });
+    await tick(2);
+    assert.deepEqual(disconnectPosts().map((c) => c.body), [
+      { session_id: "sess_redeemed", session_token: "st_redeemed" },
+    ]);
+    page.emit("pagehide", { persisted: false });
+    await conversation.endSession();
+    await tick(2);
+    assert.equal(disconnectPosts().length, 1, "the page close is the one disconnect");
+  } finally {
+    restore();
+  }
+});
+
+test("VOSO-991: after End Call a later pagehide sends nothing", async () => {
+  const { page, restore } = withPage();
+  try {
+    const { conversation } = await connected();
+    await conversation.endSession();
+    page.emit("pagehide", { persisted: false });
+    await tick(2);
+    assert.equal(disconnectPosts().length, 1);
+  } finally {
+    restore();
+  }
 });
